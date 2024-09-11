@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Success</title>
+  <script>
+    // ウィンドウがロードされたときにポップアップを閉じる
+    window.onload = function() {
+      if (window.opener) {
+        // 親ウィンドウに決済成功を通知
+        window.opener.postMessage({ status: 'success' }, '*');
+        // 自身のウィンドウ（ポップアップ）を閉じる
+        window.close();
+      }
+    };
+  </script>
+</head>
+<body>
+  <h1>決済が成功しました！</h1>
+</body>
+</html>

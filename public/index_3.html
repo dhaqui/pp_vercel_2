@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Selection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      max-width: 600px;
+    }
+
+    h2 {
+      color: #333;
+      text-align: center;
+    }
+
+    label {
+      font-size: 18px;
+      margin-right: 10px;
+    }
+
+    button {
+      background-color: #0070ba;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
+      width: 50%;
+      text-align: center;
+    }
+
+    button:hover {
+      background-color: #005c99;
+    }
+
+    #paypal-button-container,
+    #alternate-button-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #paypal-button-container button,
+    #alternate-button-container button {
+      width: 50%;
+    }
+
+    #paypal-button-container {
+      width: 400px;
+    }
+
+    .note {
+      font-size: 14px;
+      color: #555;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    .logo-container img {
+      width: 400px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>支払い方法選択</h2>
+
+    <!-- PayPal Option -->
+    <label>
+      <input type="radio" name="payment-option" value="paypal" checked>
+      PayPal
+    </label>
+    <div class="note">
+      カードでも銀行口座からでも、IDとパスワードで簡単・安全にお支払い。新規登録は無料です。
+    </div>
+    <div class="logo-container">
+      <img src="https://www.paypalobjects.com/digitalassets/c/website/marketing/apac/jp/developer/319x110_b.png" alt="PayPalロゴ">
+    </div>
+    <div id="paypal-button-container"></div>
+
+    <!-- Other Payment Method Option -->
+    <label>
+      <input type="radio" name="payment-option" value="alternate">
+      銀行決済
+    </label>
+    <div class="note">
+      銀行口座からのお支払がかんたん。振り込み手数料無料。全国300以上の金融機関がご利用いただけます。
+    </div>
+    <div class="logo-container">
+      <img src="bank.png" alt="銀行ロゴ">
+    </div>
+    <div id="alternate-button-container">
+      <button type="button" id="bank-payment-button">銀行口座で決済を行う</button>
+    </div>
+
+  </div>
+
+  <script src="https://www.paypal.com/sdk/js?client-id=AeNx2jnN5CUV4jAPLqYMat3ig6PDZXh-kKPnTjQQIIU6AVNA79QnRp-dk4tqHvnnqBbzR_WlCovKdMN-&currency=JPY&components=buttons,marks"></script>
+  <script>
+    // Render PayPal Buttons
+    paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        width: 400
+      },
+      createOrder: function (data, actions) {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: '3600' // ここに決済金額を入力します
+            }
+          }]
+        });
+      },
+      onApprove: function (data, actions) {
+        return actions.order.capture().then(function (details) {
+          // 支払い完了時に完了ページにリダイレクト
+          window.location.href = 'success.html';
+        });
+      }
+    }).render('#paypal-button-container');
+
+    // Listen for changes to the radio buttons
+    document.querySelectorAll('input[name=payment-option]').forEach(function (el) {
+      el.addEventListener('change', function (event) {
+        if (event.target.value === 'paypal') {
+          document.querySelector('#alternate-button-container').style.display = 'none';
+          document.querySelector('#paypal-button-container').style.display = 'block';
+        } else {
+          document.querySelector('#alternate-button-container').style.display = 'block';
+          document.querySelector('#paypal-button-container').style.display = 'none';
+        }
+      });
+    });
+
+    // Hide non-PayPal button by default
+    document.querySelector('#alternate-button-container').style.display = 'none';
+
+    // 銀行口座で決済ボタンが押された場合
+    document.getElementById('bank-payment-button').addEventListener('click', () => {
+      // まずポップアップを開く
+      const width = 500;
+      const height = 700;
+      const left = (window.screen.width / 2) - (width / 2);
+      const top = (window.screen.height / 2) - (height / 2);
+
+      const popup = window.open('', 'PayPal Checkout', `width=${width},height=${height},top=${top},left=${left}`);
+
+      // サーバーにリクエストを送信してオーダーを作成
+      fetch('/api/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          items: [
+            { id: 'item-1', name: 'Product 1', price: 3600, currency: 'JPY' }
+          ]
+        })
+      })
+      .then(response => response.json())
+      .then(orderData => {
+        if (orderData.id) {
+          // ポップアップにPayPalチェックアウト画面を表示
+          popup.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${orderData.id}`;
+        } else {
+          console.error('Order creation failed', orderData);
+          popup.close(); // エラーが発生したらポップアップを閉じる
+        }
+      })
+      .catch(error => {
+        console.error('Error during PayPal order creation:', error);
+        popup.close(); // エラーが発生したらポップアップを閉じる
+      });
+    });
+
+    // メッセージを受け取る
+    window.addEventListener('message', function(event) {
+      if (event.data.status === 'success') {
+        // 決済成功時に親ウィンドウをsuccess.htmlにリダイレクト
+        if (event.data.redirect) {
+          window.location.href = '/success.html';
+        } else {
+          // そのまま成功メッセージを表示するなどの処理
+          document.getElementById('success-message').style.display = 'block';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
