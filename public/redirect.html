@@ -37,15 +37,25 @@
     }
 
     // ウィンドウがロードされたときにCAPTUREを実行
-    window.onload = function() {
-      const token = getQueryParam('token'); // クエリから token を取得
-      if (token) {
-        capturePayment(token); // token を使って capture リクエストを送信
+    window.onload = async function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const PayerID = urlParams.get('PayerID');
+
+      if (token && PayerID) {
+        try {
+          const response = await capturePayment(token, PayerID);
+          console.log('Payment captured successfully:', response);
+          // 成功時の処理
+        } catch (error) {
+          console.error('Error capturing payment:', error);
+          // エラーハンドリング
+        }
       } else {
-        console.error('Token not found in query parameters.');
-        document.body.innerHTML = '<h1>Tokenが見つかりませんでした。</h1>';
+        console.error('Missing token or PayerID');
       }
     };
+
   </script>
 </head>
 <body>
