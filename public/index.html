@@ -180,6 +180,23 @@
         if (orderData.id) {
           // ポップアップにPayPalチェックアウト画面を表示
           popup.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${orderData.id}`;
+
+          // ポップアップのURLを監視して、決済完了時に親ウィンドウに通知
+          const checkPopup = setInterval(() => {
+            if (!popup || popup.closed) {
+              clearInterval(checkPopup);
+            }
+            try {
+              // redirect.htmlに遷移したら親ウィンドウにリダイレクト
+              if (popup.location.href.includes('redirect.html')) {
+                clearInterval(checkPopup);
+                popup.close();
+                window.location.href = popup.location.href; // 親ウィンドウでリダイレクト
+              }
+            } catch (error) {
+              // クロスオリジンエラーが発生する可能性があるので無視
+            }
+          }, 500);
         } else {
           console.error('Order creation failed', orderData);
           popup.close(); // エラーが発生したらポップアップを閉じる

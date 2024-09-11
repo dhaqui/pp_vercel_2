@@ -2,8 +2,8 @@ const paypal = require('@paypal/checkout-server-sdk');
 
 // PayPalの環境設定
 const environment = new paypal.core.SandboxEnvironment(
-  'AV3P5knBPhPGwS7EDayvKulircVel0n9adwODe6qRp1-0vp2pZ2DRaOa0kegvAwQYlJ4K_C78v3RduCG',
-  'EATQXaVnsOagF0rvsfzZwaSmk_040HeX1t2aOrLjOOjx2LlCGVCjdJwaQUJ_9rCpI4vYCFDaM2sn3fPb'
+  'AV3P5knBPhPGwS7EDayvKulircVel0n9adwODe6qRp1-0vp2pZ2DRaOa0kegvAwQYlJ4K_C78v3RduCG',  // あなたのPayPal Client ID
+  'EATQXaVnsOagF0rvsfzZwaSmk_040HeX1t2aOrLjOOjx2LlCGVCjdJwaQUJ_9rCpI4vYCFDaM2sn3fPb'   // あなたのPayPal Client Secret
 );
 const client = new paypal.core.PayPalHttpClient(environment);
 
@@ -27,14 +27,14 @@ module.exports = async (req, res) => {
         }
       ],
       application_context: {
-        return_url: 'https://pp-vercel.vercel.app/redirect.html',  // 決済成功後のリダイレクト先URL
-        cancel_url: 'https://pp-vercel.vercel.app/cancel.html'   // キャンセル後のリダイレクト先URL
+        return_url: 'https://pp-vercel_2.vercel.app/redirect.html',  // 決済成功後のリダイレクト先URL
+        cancel_url: 'https://pp-vercel_2.vercel.app/cancel.html'     // キャンセル後のリダイレクト先URL
       }
     });
 
     try {
       const order = await client.execute(request);
-      res.status(200).json(order.result);
+      res.status(200).json(order.result);  // クライアントにオーダー情報を返す
     } catch (error) {
       console.error('Error creating order:', error);
       res.status(500).json({ error: 'An error occurred while creating the order' });
