@@ -27,8 +27,8 @@ module.exports = async (req, res) => {
         }
       ],
       application_context: {
-        return_url: 'https://pp-vercel_2.vercel.app/redirect.html',  // 決済成功後のリダイレクト先URL
-        cancel_url: 'https://pp-vercel_2.vercel.app/cancel.html'     // キャンセル後のリダイレクト先URL
+        return_url: 'https://pp-vercel-2.vercel.app/redirect.html',  // 決済成功後のリダイレクト先URL
+        cancel_url: 'https://pp-vercel-2.vercel.app/cancel.html'     // キャンセル後のリダイレクト先URL
       }
     });
 
