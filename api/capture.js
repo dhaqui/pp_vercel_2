@@ -9,6 +9,11 @@ const client = new paypal.core.PayPalHttpClient(environment);
 
 module.exports = async (req, res) => {
   const { token } = req.query;  // クエリパラメータからtoken（注文ID）を取得
+
+  if (!token) {
+    return res.status(400).json({ error: 'Missing token parameter' });
+  }
+
   console.log(`Received request to capture order with token: ${token}`); // デバッグ用ログ
 
   try {
@@ -18,10 +23,32 @@ module.exports = async (req, res) => {
 
     console.log('Capture result:', capture); // デバッグ用ログ
 
-    // 決済のステータスを返す
-    res.status(200).json({ status: capture.result.status });
+    if (capture.statusCode === 201) {
+      // 決済成功時のレスポンス
+      res.status(200).json({ status: capture.result.status });
+    } else {
+      // PayPal APIがエラーを返した場合
+      console.error('Capture failed with status:', capture.statusCode, capture.result);
+      res.status(500).json({
+        error: 'Failed to capture order',
+        details: capture.result
+      });
+    }
   } catch (error) {
+    // エラー処理
     console.error('Error capturing payment:', error);
-    res.status(500).json({ error: 'An error occurred while capturing the payment' });
+
+    // エラーの詳細を返す
+    if (error.response) {
+      // PayPal APIがエラーを返した場合
+      const errorDetails = error.response;
+      res.status(500).json({
+        error: 'PayPal API error occurred while capturing the payment',
+        details: errorDetails
+      });
+    } else {
+      // それ以外のシステムエラー
+      res.status(500).json({ error: 'An unknown error occurred while capturing the payment' });
+    }
   }
 };
