@@ -52,6 +52,7 @@
     button:hover {
       background-color: #005c99;
     }
+
     #paypal-button-container,
     #alternate-button-container {
       margin-top: 20px;
@@ -60,8 +61,8 @@
     }
 
     #paypal-button-container {
-      width: 50%; /* 幅を50%に設定 */
-      margin: 0 auto; /* 要素を中央に寄せる */
+      width: 50%;
+      margin: 0 auto;
     }
 
     .note {
@@ -73,6 +74,35 @@
 
     .logo-container img {
       width: 400px;
+    }
+
+    .rebate-info {
+      font-size: 12px;
+      color: #0070ba;
+      font-weight: bold;
+      display: inline-block;
+      text-align: center;
+      line-height: 1.2;
+      margin-left: 5px;
+    }
+
+    .powered-by-paypal {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .bank-payment img {
+      width: 120px;
+      vertical-align: middle;
+    }
+
+    .bank-payment label {
+      vertical-align: middle;
+    }
+
+    .rebate-info span {
+      display: block;
     }
 
   </style>
@@ -96,16 +126,19 @@
     <div id="paypal-button-container"></div>
 
     <!-- Other Payment Method Option -->
-    <label>
+    <label class="bank-payment">
       <input type="radio" name="payment-option" value="alternate">
       銀行決済
+      <img src="powerd_by_PayPal_t.png" alt="Powered by PayPal">
+      <span class="rebate-info">1.5%<span>還元中</span></span>
     </label>
     <div class="note">
-      銀行口座からのお支払がかんたん。振り込み手数料無料。全国300以上の金融機関がご利用いただけます。
+      銀行口座からのお支払いでも、一度設定すれば素早くかんたん。<br>新規登録・振込手数料も無料です。
+      <br>
+      ※300行以上の金融機関がご利用頂けます。利用可能な金融機関一覧は
+      <a href="https://www.paypalobjects.com/marketing/web/jp/OTB_Banks.pdf" target="_blank">こちら</a>。
     </div>
-    <div class="logo-container">
-      <img src="bank.png" alt="銀行ロゴ">
-    </div>
+
     <div id="alternate-button-container">
       <button type="button" id="bank-payment-button">銀行口座で決済を行う</button>
     </div>
@@ -155,7 +188,6 @@
 
     // 銀行口座で決済ボタンが押された場合
     document.getElementById('bank-payment-button').addEventListener('click', () => {
-      // まずポップアップを開く
       const width = 500;
       const height = 700;
       const left = (window.screen.width / 2) - (width / 2);
@@ -163,7 +195,6 @@
 
       const popup = window.open('', 'PayPal Checkout', `width=${width},height=${height},top=${top},left=${left}`);
 
-      // サーバーにリクエストを送信してオーダーを作成
       fetch('/api/create-order', {
         method: 'POST',
         headers: {
@@ -178,44 +209,37 @@
       .then(response => response.json())
       .then(orderData => {
         if (orderData.id) {
-          // ポップアップにPayPalチェックアウト画面を表示
           popup.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${orderData.id}`;
 
-          // ポップアップのURLを監視して、決済完了時に親ウィンドウに通知
           const checkPopup = setInterval(() => {
             if (!popup || popup.closed) {
               clearInterval(checkPopup);
             }
             try {
-              // redirect.htmlに遷移したら親ウィンドウにリダイレクト
               if (popup.location.href.includes('redirect.html')) {
                 clearInterval(checkPopup);
                 popup.close();
-                window.location.href = popup.location.href; // 親ウィンドウでリダイレクト
+                window.location.href = popup.location.href;
               }
             } catch (error) {
-              // クロスオリジンエラーが発生する可能性があるので無視
             }
           }, 500);
         } else {
           console.error('Order creation failed', orderData);
-          popup.close(); // エラーが発生したらポップアップを閉じる
+          popup.close();
         }
       })
       .catch(error => {
         console.error('Error during PayPal order creation:', error);
-        popup.close(); // エラーが発生したらポップアップを閉じる
+        popup.close();
       });
     });
 
-    // メッセージを受け取る
     window.addEventListener('message', function(event) {
       if (event.data.status === 'success') {
-        // 決済成功時に親ウィンドウをsuccess.htmlにリダイレクト
         if (event.data.redirect) {
           window.location.href = '/success.html';
         } else {
-          // そのまま成功メッセージを表示するなどの処理
           document.getElementById('success-message').style.display = 'block';
         }
       }
