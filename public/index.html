@@ -111,6 +111,21 @@
   <div class="container">
     <h2>支払い方法選択</h2>
 
+    <!-- Other Payment Method Option -->
+    <label class="bank-payment">
+      <input type="radio" name="payment-option" value="alternate">
+      かんたん銀行決済
+      <img src="powerd_by_PayPal_t.png" alt="Powered by PayPal">
+      <span class="rebate-info">1.5%<span>還元中</span></span>
+    </label>
+    <div class="note">
+      銀行口座からのお支払いでも、一度設定すれば素早くかんたん。<br>新規登録・振込手数料も無料です。
+      <br>
+      ※300行以上の金融機関がご利用頂けます。利用可能な金融機関一覧は
+      <a href="https://www.paypalobjects.com/marketing/web/jp/OTB_Banks.pdf" target="_blank">こちら</a>。
+    </div>
+    <br><br>
+
     <!-- PayPal Option -->
     <label>
       <input type="radio" name="payment-option" value="paypal" checked>
@@ -125,20 +140,6 @@
     </div>
     <br>
     <div id="paypal-button-container"></div>
-    <br><br>
-    <!-- Other Payment Method Option -->
-    <label class="bank-payment">
-      <input type="radio" name="payment-option" value="alternate">
-      かんたん銀行決済
-      <img src="powerd_by_PayPal_t.png" alt="Powered by PayPal">
-      <span class="rebate-info">1.5%<span>還元中</span></span>
-    </label>
-    <div class="note">
-      銀行口座からのお支払いでも、一度設定すれば素早くかんたん。<br>新規登録・振込手数料も無料です。
-      <br>
-      ※300行以上の金融機関がご利用頂けます。利用可能な金融機関一覧は
-      <a href="https://www.paypalobjects.com/marketing/web/jp/OTB_Banks.pdf" target="_blank">こちら</a>。
-    </div>
 
     <div id="alternate-button-container">
       <button type="button" id="bank-payment-button">銀行口座で決済を行う</button>
