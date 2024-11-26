@@ -9,7 +9,7 @@
     window.onload = function() {
       if (window.opener) {
         // 親ウィンドウに決済成功を通知
-        window.opener.postMessage({ status: 'success' }, '*');
+        window.opener.postMessage({ status: 'cancel' }, '*');
         // 自身のウィンドウ（ポップアップ）を閉じる
         window.close();
       }
@@ -17,6 +17,6 @@
   </script>
 </head>
 <body>
-  <h1>決済が成功しました！</h1>
+  <h1>キャンセルします。</h1>
 </body>
 </html>
