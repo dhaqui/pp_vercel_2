@@ -245,6 +245,13 @@
           document.getElementById('success-message').style.display = 'block';
         }
       }
+      if (event.data.status === 'cancel') {
+        if (event.data.redirect) {
+          window.location.href = '/cancel.html';
+        } else {
+          document.getElementById('success-message').style.display = 'block';
+        }
+      }
     });
   </script>
 </body>
