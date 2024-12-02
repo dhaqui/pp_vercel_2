@@ -104,6 +104,12 @@
     .rebate-info span {
       display: block;
     }
+    
+    .payment-option-container {
+    　display: flex;
+    　align-items: center; /* 垂直方向で中央揃え */
+    　gap: 8px; /* ラジオボタンとPayPalマークの間隔を調整 */
+  　}
 
   </style>
 </head>
@@ -131,10 +137,12 @@
     <br><br>
 
     <!-- PayPal Option -->
-    <label>
-      <input type="radio" name="payment-option" value="paypal">
-    </label>
-    <div id="paypal-marks-container"></div>
+    <div class="payment-option-container">
+ 　 　　<label>
+    　　　　<input type="radio" name="payment-option" value="paypal">
+  　　　</label>
+  　　　<div id="paypal-marks-container"></div>
+　　</div>
     <div class="note">
         カードでも銀行口座からでも、IDとパスワードでかんたん・安全にお支払い。新規登録は無料です。
         <a href="https://www.paypal.com/jp/webapps/mpp/logo/about" target="_blank">ペイパルとは？</a>
