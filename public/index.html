@@ -133,7 +133,7 @@
     <!-- PayPal Option -->
     <label>
       <input type="radio" name="payment-option" value="paypal">
-      PayPal
+      <div id="paypal-marks-container"></div>
     </label>
     <div class="note">
         カードでも銀行口座からでも、IDとパスワードでかんたん・安全にお支払い。新規登録は無料です。
@@ -150,7 +150,7 @@
 
   <script src="https://www.paypal.com/sdk/js?client-id=AeNx2jnN5CUV4jAPLqYMat3ig6PDZXh-kKPnTjQQIIU6AVNA79QnRp-dk4tqHvnnqBbzR_WlCovKdMN-&currency=JPY&components=buttons,marks"></script>
   <script>
-   // paypal.Marks().render('#paypal-marks-container');
+    paypal.Marks({fundingSource: paypal.FUNDING.PAYPAL}).render('#paypal-marks-container');
     // Render PayPal Buttons
     paypal.Buttons({
       style: {
